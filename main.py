@@ -1,6 +1,6 @@
 from ariadne import QueryType, graphql_sync, make_executable_schema, gql
 from ariadne.explorer import ExplorerGraphiQL
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 schema = gql('''
     type Query {
@@ -21,6 +21,11 @@ schema = make_executable_schema(schema, query)
 app = Flask(__name__)
 
 explorer_html = ExplorerGraphiQL().html(None)
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_template('index.html')
 
 
 @app.route("/graphql", methods=["GET"])
