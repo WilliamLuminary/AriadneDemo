@@ -1,3 +1,4 @@
+import os
 from ariadne import graphql_sync
 from ariadne.explorer import ExplorerGraphiQL
 from flask import jsonify, request, render_template
@@ -9,7 +10,11 @@ def init_app(app, schema):
     @app.route("/", methods=["GET"])
     def index():
         """Serve the main index.html page."""
-        return render_template('index.html')
+        mode = os.environ.get('VIEW_MODE', 'developer')
+        if mode == 'client':
+            return render_template('public/index.html')
+        else:
+            return render_template('index.html')
 
     @app.route("/graphql", methods=["GET"])
     def graphql_explorer():
