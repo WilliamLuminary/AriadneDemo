@@ -1,11 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title</title>
+    <style>
+        /* Style to make the video fill the entire viewport and stay in the background */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            display: grid;
+            justify-items: center;
+            align-items: center;
+        }
+
+        .bg-video {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            transform: translateX(-50%) translateY(-50%);
+        }
+
+        .content {
+            text-align: center;
+            padding: 80px;
+            background-color: rgba(255, 255, 255, 0.26);
+            backdrop-filter: blur(100px);
+            border-radius: 10px;
+            z-index: 1;
+        }
+
+        h1 {
+            color: white;
+            margin-top: 0;
+        }
+
+        button {
+            padding: 12px 22px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            background-color: #999999;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
+
 <body>
+<video class="bg-video" autoplay loop muted>
+    <source src="https://assets.mixkit.co/videos/preview/mixkit-a-laptop-and-four-screens-running-green-text-scripts-50749-large.mp4" type="video/mp4">
+</video>
+
+<div class="content">
     <h1>Welcome to AriadneDemo!</h1>
     <button onclick="location.href='/graphql'">Navigate to GraphiQL Explorer</button>
+</div>
+
 </body>
+
 </html>
