@@ -1,52 +1,19 @@
-from ariadne import QueryType, graphql_sync, make_executable_schema, gql
-from ariadne.explorer import ExplorerGraphiQL
-from flask import Flask, jsonify, request, render_template
+from ariadne import make_executable_schema, gql
+from flask import Flask
 
-schema = gql('''
-    type Query {
-        hello: String
-    }
-''')
+from config import Config
+from gql_handlers.resolvers import query
+from routes import init_app
 
-query = QueryType()
+with open("gql_handlers/schema.graphql", "r") as file:
+    schema_str = file.read()
 
-
-@query.field("hello")
-def resolve_hello(_, info):
-    return "Hello world!"
-
-
-schema = make_executable_schema(schema, query)
+schema = make_executable_schema(gql(schema_str), query)
 
 app = Flask(__name__)
+app.config.from_object(Config)
 
-explorer_html = ExplorerGraphiQL().html(None)
-
-
-@app.route("/", methods=["GET"])
-def index():
-    return render_template('index.html')
-
-
-@app.route("/graphql", methods=["GET"])
-def graphql_explorer():
-    return explorer_html, 200
-
-
-@app.route("/graphql", methods=["POST"])
-def graphql_server():
-    data = request.get_json()
-
-    success, result = graphql_sync(
-        schema,
-        data,
-        context_value={"request": request},
-        debug=app.debug
-    )
-
-    status_code = 200 if success else 400
-    return jsonify(result), status_code
-
+init_app(app, schema)
 
 if __name__ == "__main__":
     app.run(debug=True)
