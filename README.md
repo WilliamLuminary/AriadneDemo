@@ -23,7 +23,7 @@ Docker-ready for seamless deployment and scaling.
 
 3. **Launch the Docker Container**:
    ```bash
-   docker run -p 5000:5000 ariadnedemo
+   docker run -d -p 5002:5002 ariadnedemo
    ```
 
 ## Usage
