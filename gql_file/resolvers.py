@@ -8,10 +8,18 @@ _thread_local = threading.local()
 
 def get_db():
     if not hasattr(_thread_local, "conn"):
-        _thread_local.conn = sqlite3.connect('identifier.sqlite', check_same_thread=False)
+        _thread_local.conn = sqlite3.connect('database/identifier.sqlite', check_same_thread=False)
         _thread_local.cursor = _thread_local.conn.cursor()
 
     return _thread_local.conn, _thread_local.cursor
+
+
+def close_db():
+    if hasattr(_thread_local, "conn"):
+        _thread_local.cursor.close()
+        _thread_local.conn.close()
+        del _thread_local.conn
+        del _thread_local.cursor
 
 
 # Define the Person interface using InterfaceType
@@ -81,6 +89,7 @@ def resolve_accounts(_, info):
     conn, cursor = get_db()
     cursor.execute("SELECT id, name, age, gender, department FROM ariadne_account_test")
     accounts = cursor.fetchall()
+    close_db()
     return [{"id": account[0], "name": account[1], "age": account[2], "gender": account[3], "department": account[4]}
             for account in accounts]
 
@@ -105,6 +114,7 @@ def resolve_create_account(_, info, user_input):
                    (user_input["name"], user_input["age"], user_input["gender"], user_input["department"]))
     conn.commit()
     new_id = cursor.lastrowid
+    close_db()
     return {"id": new_id, **user_input}
 
 
@@ -126,6 +136,7 @@ def resolve_update_account(_, info, name, user_input):
     cursor.execute("SELECT * FROM ariadne_account_test WHERE name = ?", (name,))
     updated_record = cursor.fetchone()
 
+    close_db()
     if updated_record:
         columns = [desc[0] for desc in cursor.description]
         return {col: updated_record[i] for i, col in enumerate(columns)}
@@ -139,9 +150,8 @@ def resolve_delete_account(_, info, name):
 
     cursor.execute("DELETE FROM ariadne_account_test WHERE name = ?", (name,))
     deleted_rows = conn.total_changes
-
     conn.commit()
-
+    close_db()
     if deleted_rows:
         return {"success": True, "message": f"Deleted account with name {name}"}
     else:
