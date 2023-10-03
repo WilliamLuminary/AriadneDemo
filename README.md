@@ -40,69 +40,69 @@ Docker-ready for seamless deployment and scaling.
    }
    ```
 
-    2. **Multiple Account Creation**:
-       ```graphql
-       mutation CreateTest {
-       createWill: create_account(
-       user_input: {name: "Will", age: 18, gender: "M", department: "frontend"}
-         ) {
-              name
-              age
-              gender
-              department
-       	}
-       createWilliam: create_account(
-       user_input: {name: "William", age: 24, gender: "M", department: "backend"}
-         ) {
-              name
-              age
-              gender
-              department
-           }
-       creteBrook: create_account(
-       user_input: {name: "Brook", age: 23, gender: "M", department: "finance"}
-         ) {
-              name
-              age
-              gender
-              department
-           }
+2. **Multiple Account Creation**:
+   ```graphql
+   mutation CreateTest {
+   createWill: create_account(
+   user_input: {name: "Will", age: 18, gender: "M", department: "frontend"}
+     ) {
+          name
+          age
+          gender
+          department
        }
-       ```
+   createWilliam: create_account(
+   user_input: {name: "William", age: 24, gender: "M", department: "backend"}
+     ) {
+          name
+          age
+          gender
+          department
+       }
+   creteBrook: create_account(
+   user_input: {name: "Brook", age: 23, gender: "M", department: "finance"}
+     ) {
+          name
+          age
+          gender
+          department
+       }
+   }
+   ```
 
-    3. **Fetch All Accounts**:
-       ```graphql
-       query CheckAll{
-       	accounts{
-               name
-               gender
-               age
-               department
-       	}
+3. **Fetch All Accounts**:
+   ```graphql
+   query CheckAll{
+       accounts{
+           name
+           gender
+           age
+           department
        }
-       ```
+   }
+   ```
 
-    4. **Update Account**:
-       ```graphql
-       mutation UpdateTest{
-           update_account(name: "Will", user_input:{
-             age: 50
-           }) {
-           	age
-           }
+4. **Update Account**:
+   ```graphql
+   mutation UpdateTest{
+       update_account(name: "Will", user_input:{
+         age: 50
+       }) {
+           age
        }
-       ```
+   }
+   ```
 
-    5. **Delete Account**:
-       ```graphql
-       mutation DeleteTest {
-           delete_account(name: "Will") {
-               success
-               message
-           }
+5. **Delete Account**:
+   ```graphql
+   mutation DeleteTest {
+       delete_account(name: "Will") {
+           success
+           message
        }
+   }
         
-       ```
+   ```
 
 ## Contributions
 
