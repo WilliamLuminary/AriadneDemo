@@ -18,15 +18,15 @@
 <script>
     function getData() {
         const query = `
-        query Account($username: String) {
-            account(user_name: $username) {
+        query Account($user_name: String, $city_name: String) {
+            account(user_name: $user_name) {
                 name
                 age
-                salary(city: "NY")
+                salary(city: $city_name)
             }
         }`;
 
-        const variables = {username: 'Will'}
+        const variables = {user_name: 'Will', city_name: 'NY'}
 
         fetch('/graphql', {
             method: "POST",
