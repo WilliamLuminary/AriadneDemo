@@ -2,7 +2,7 @@ from ariadne import make_executable_schema, gql
 from flask import Flask, request, jsonify
 
 from config import Config
-from gql_files.resolvers import query, mutation
+from gql_files.resolvers import Query, Mutation
 from routes import init_app
 
 # Load schema from schema.graphql file
@@ -10,7 +10,7 @@ with open("gql_files/schema.graphql", "r") as file:
     schema_str = file.read()
 
 # Create an executable schema from the GraphQL schema string and resolvers.
-schema = make_executable_schema(gql(schema_str), query, mutation)
+schema = make_executable_schema(gql(schema_str), Query, Mutation)
 
 # Initialize Flask app with configurations
 app = Flask(__name__)
