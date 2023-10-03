@@ -1,3 +1,28 @@
 type Query {
     hello: String
+    account_name: String
+    age: Int
+    account(user_name: String): Account
+    get_classmates(class_no: Int!): [String]
+    accounts: [Account]
+}
+
+type Account {
+    name: String
+    age: Int
+    gender: String
+    department: String
+    salary(city: String): Int
+}
+
+type Mutation {
+    create_account(user_input: Account_Input): Account
+    update_account(id: ID!, user_input: Account_Input): Account
+}
+
+input Account_Input {
+    name: String
+    age: Int
+    gender: String
+    department: String
 }
