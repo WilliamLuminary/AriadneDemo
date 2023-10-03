@@ -43,30 +43,30 @@ Docker-ready for seamless deployment and scaling.
 2. **Multiple Account Creation**:
    ```graphql
    mutation CreateTest {
-    createWill: create_account(
-   user_input: {name: "Will", age: 18, gender: "M", department: "frontend"}
-     ) {
-          name
-          age
-          gender
-          department
-       }
-   createWilliam: create_account(
-   user_input: {name: "William", age: 24, gender: "M", department: "backend"}
-     ) {
-          name
-          age
-          gender
-          department
-       }
-   creteBrook: create_account(
-   user_input: {name: "Brook", age: 23, gender: "M", department: "finance"}
-     ) {
-          name
-          age
-          gender
-          department
-       }
+       createWill: create_account(
+        user_input: {name: "Will", age: 18, gender: "M", department: "frontend"}
+        ) {
+              name
+              age
+              gender
+              department
+           }
+       createWilliam: create_account(
+        user_input: {name: "William", age: 24, gender: "M", department: "backend"}
+        ) {
+              name
+              age
+              gender
+              department
+           }
+       creteBrook: create_account(
+        user_input: {name: "Brook", age: 23, gender: "M", department: "finance"}
+        ) {
+              name
+              age
+              gender
+              department
+           }
    }
    ```
 
