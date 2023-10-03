@@ -21,9 +21,15 @@ type Account implements Person {
     salary(city: String): Int
 }
 
+type DeletionResponse {
+    success: Boolean!
+    message: String
+}
+
 type Mutation {
     create_account(user_input: Account_Input): Account
-    update_account(id: ID!, user_input: Account_Input): Account
+    update_account(name: String!, user_input: Account_Input!): Account
+    delete_account(name: String!): DeletionResponse!
 }
 
 input Account_Input {
