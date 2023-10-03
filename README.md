@@ -1,66 +1,109 @@
 # AriadneDemo
 
-AriadneDemo is a simple Flask-based GraphQL server using the Ariadne library. It provides a GraphiQL explorer interface
-for running and testing GraphQL queries, encapsulated within a Docker container for easy deployment and scaling.
+A simple Flask-based GraphQL server utilizing the Ariadne library. Comes with an integrated GraphiQL explorer and is
+Docker-ready for seamless deployment and scaling.
 
 ## Features
 
-- GraphQL endpoint to process and respond to GraphQL queries.
-- Integrated GraphiQL explorer for interactive query execution.
-- Dockerized application for consistent deployment and scaling.
+- **GraphQL Endpoint**: Processes and responds to GraphQL queries.
+- **GraphiQL Explorer**: An interactive interface for executing GraphQL queries.
+- **Docker Support**: Ensures consistent deployments and easy scaling.
 
 ## Setup & Installation
 
 1. **Clone the Repository**:
-
    ```bash
-   git clone git@github.com:WilliamLuminary/AriadneDemo.git
-   cd AriadneDemo
+   git clone git@github.com:WilliamLuminary/AriadneDemo.git && cd AriadneDemo
    ```
 
 2. **Build the Docker Image**:
-
    ```bash
    docker build -t ariadnedemo .
    ```
 
-3. **Run the Docker Container**:
-
+3. **Launch the Docker Container**:
    ```bash
    docker run -p 5000:5000 ariadnedemo
    ```
 
-   This maps port 5000 in the container to port 5000 on your host machine.
-
 ## Usage
 
-1. **GraphiQL Explorer**: Once the Docker container is running, navigate to `http://localhost:5000/graphql` in your web
-   browser to access the GraphiQL explorer, where you can interactively run and test GraphQL queries.
+- **GraphiQL Explorer**: Visit `http://localhost:5000/graphql` in your browser to interact with the GraphiQL explorer.
+- **GraphQL Endpoint**: POST your GraphQL queries to `http://localhost:5000/graphql`.
 
-2. **GraphQL Endpoint**: Send POST requests with your GraphQL query payloads to the `http://localhost:5000/graphql`
-   endpoint.
+### Sample Queries
 
-## Example Query
+1. **Simple Query**:
+   ```graphql
+   {
+       hello
+   }
+   ```
 
-You can test the server with the following query:
+    2. **Multiple Account Creation**:
+       ```graphql
+       mutation CreateTest {
+       createWill: create_account(
+       user_input: {name: "Will", age: 18, gender: "M", department: "frontend"}
+         ) {
+              name
+              age
+              gender
+              department
+       	}
+       createWilliam: create_account(
+       user_input: {name: "William", age: 24, gender: "M", department: "backend"}
+         ) {
+              name
+              age
+              gender
+              department
+           }
+       creteBrook: create_account(
+       user_input: {name: "Brook", age: 23, gender: "M", department: "finance"}
+         ) {
+              name
+              age
+              gender
+              department
+           }
+       }
+       ```
 
-```graphql
- query {
-   hello
-}
-```
+    3. **Fetch All Accounts**:
+       ```graphql
+       query CheckAll{
+       	accounts{
+               name
+               gender
+               age
+               department
+       	}
+       }
+       ```
 
-This should return a response with:
+    4. **Update Account**:
+       ```graphql
+       mutation UpdateTest{
+           update_account(name: "Will", user_input:{
+             age: 50
+           }) {
+           	age
+           }
+       }
+       ```
 
-```json
-{
-  "data": {
-    "hello": "Hello world!"
-  }
-}
-```
+    5. **Delete Account**:
+       ```graphql
+       mutation DeleteTest {
+           delete_account(name: "Will") {
+               success
+               message
+           }
+       }
+        
+       ```
 
-## Contributing
+## Contributions
 
-If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly
-welcome.
+Contributions are welcome! Fork the repository, make your changes, and submit a pull request.
