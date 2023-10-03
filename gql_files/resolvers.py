@@ -1,24 +1,27 @@
-from ariadne import ObjectType, QueryType, MutationType
+from ariadne import InterfaceType, ObjectType, QueryType, MutationType
 from database import fakeDb
 
-# Define the Account type using ObjectType
-Account = ObjectType("Account")
+# Define the Person interface using InterfaceType
+Person = InterfaceType("Person")
 
 
-# Bind resolvers to the Account type fields
-@Account.field("name")
+@Person.field("name")
 def resolve_name(obj, info):
     return obj.get("name", "")
 
 
-@Account.field("age")
+@Person.field("age")
 def resolve_age(obj, info):
     return obj.get("age", 0)
 
 
-@Account.field("gender")
+@Person.field("gender")
 def resolve_gender(obj, info):
     return obj.get("gender", "")
+
+
+# Define the Account type using ObjectType
+Account = ObjectType("Account")
 
 
 @Account.field("department")
