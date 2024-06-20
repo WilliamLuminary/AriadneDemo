@@ -1,28 +1,27 @@
-import sqlite3
-import threading
-
 from ariadne import InterfaceType, ObjectType, QueryType, MutationType
+from flask_sqlalchemy import SQLAlchemy
 
-_thread_local = threading.local()
-
-
-def get_db():
-    if not hasattr(_thread_local, "conn"):
-        _thread_local.conn = sqlite3.connect('database/identifier.sqlite', check_same_thread=False)
-        _thread_local.cursor = _thread_local.conn.cursor()
-
-    return _thread_local.conn, _thread_local.cursor
+db = SQLAlchemy()
 
 
-def close_db():
-    if hasattr(_thread_local, "conn"):
-        _thread_local.cursor.close()
-        _thread_local.conn.close()
-        del _thread_local.conn
-        del _thread_local.cursor
+class Account(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    gender = db.Column(db.String(1), nullable=False)
+    department = db.Column(db.String(255), nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "age": self.age,
+            "gender": self.gender,
+            "department": self.department
+        }
 
 
-# Define the Person interface using InterfaceType
+# Person: InterfaceType
 Person = InterfaceType("Person")
 
 
@@ -41,21 +40,21 @@ def resolve_gender(obj, info):
     return obj.get("gender", "")
 
 
-# Define the Account type using ObjectType
-Account = ObjectType("Account")
+# Account: ObjectType
+AccountType = ObjectType("Account")
 
 
-@Account.field("department")
+@AccountType.field("department")
 def resolve_department(obj, info):
     return obj.get("department", "")
 
 
-@Account.field("salary")
+@AccountType.field("salary")
 def resolve_salary(obj, info, city=None):
     return 10000 if city in ["LA", "NY"] else 8000
 
 
-# Create a QueryType object to associate resolvers with fields.
+# Query
 Query = QueryType()
 
 
@@ -76,22 +75,12 @@ def resolve_age(_, info):
 
 @Query.field("account")
 def resolve_account(_, info, user_name=None):
-    return {
-        "name": user_name if user_name else "Unknown",
-        "age": 20,
-        "gender": "M",
-        "department": "Backend"
-    }
+    return Account.Query.filter_by(name=user_name).first() if user_name else None
 
 
 @Query.field("accounts")
 def resolve_accounts(_, info):
-    conn, cursor = get_db()
-    cursor.execute("SELECT id, name, age, gender, department FROM ariadne_account_test")
-    accounts = cursor.fetchall()
-    close_db()
-    return [{"id": account[0], "name": account[1], "age": account[2], "gender": account[3], "department": account[4]}
-            for account in accounts]
+    return Account.Query.all()
 
 
 @Query.field("get_classmates")
@@ -109,50 +98,38 @@ Mutation = MutationType()
 
 @Mutation.field("create_account")
 def resolve_create_account(_, info, user_input):
-    conn, cursor = get_db()
-    cursor.execute("INSERT INTO ariadne_account_test (name, age, gender, department) VALUES (?, ?, ?, ?)",
-                   (user_input["name"], user_input["age"], user_input["gender"], user_input["department"]))
-    conn.commit()
-    new_id = cursor.lastrowid
-    close_db()
-    return {"id": new_id, **user_input}
+    new_account = Account(
+        name=user_input["name"],
+        age=user_input["age"],
+        gender=user_input["gender"],
+        department=user_input["department"]
+    )
+    db.session.add(new_account)
+    db.session.commit()
+    return new_account
 
 
 @Mutation.field("update_account")
 def resolve_update_account(_, info, name, user_input):
-    conn, cursor = get_db()
-
-    updates = []
-    values = []
-    for key, value in user_input.items():
-        updates.append(f"{key} = ?")
-        values.append(value)
-    values.append(name)
-    update_str = ", ".join(updates)
-
-    cursor.execute(f"UPDATE ariadne_account_test SET {update_str} WHERE name = ?", values)
-    conn.commit()  # Commit the transaction
-
-    cursor.execute("SELECT * FROM ariadne_account_test WHERE name = ?", (name,))
-    updated_record = cursor.fetchone()
-
-    close_db()
-    if updated_record:
-        columns = [desc[0] for desc in cursor.description]
-        return {col: updated_record[i] for i, col in enumerate(columns)}
-    else:
-        return None
+    account = Account.query.filter_by(name=name).first()
+    if account:
+        if "name" in user_input:
+            account.name = user_input["name"]
+        if "age" in user_input:
+            account.age = user_input["age"]
+        if "gender" in user_input:
+            account.gender = user_input["gender"]
+        if "department" in user_input:
+            account.department = user_input["department"]
+        db.session.commit()
+    return account
 
 
 @Mutation.field("delete_account")
 def resolve_delete_account(_, info, name):
-    conn, cursor = get_db()
-
-    cursor.execute("DELETE FROM ariadne_account_test WHERE name = ?", (name,))
-    deleted_rows = conn.total_changes
-    conn.commit()
-    close_db()
-    if deleted_rows:
+    account = Account.query.filter_by(name=name).first()
+    if account:
+        db.session.delete(account)
+        db.session.commit()
         return {"success": True, "message": f"Deleted account with name {name}"}
-    else:
-        return {"success": False, "message": f"No account found with name {name}"}
+    return {"success": False, "message": f"No account found with name {name}"}
